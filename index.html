@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ClientFlow — Interactive Sales System Demo</title>
+<style>
+:root{
+  --bg:#f6f7f8; --paper:#ffffff; --ink:#15181b; --muted:#6f767d; --line:#e4e7ea;
+  --soft:#f1f3f4; --dark:#171a1d; --accent:#2f7d69; --accent2:#71b69f;
+  --green:#237a57; --amber:#a56b17; --red:#b64650; --blue:#315f9b;
+  --shadow:0 20px 60px rgba(16,22,26,.10); --shadow2:0 8px 24px rgba(16,22,26,.08);
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);overflow-x:hidden}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.hidden{display:none!important}
+
+/* INTRO */
+.intro{min-height:100vh;background:linear-gradient(180deg,#f8f9f9 0%,#f1f4f3 100%);position:relative;display:grid;place-items:center;padding:54px 28px;overflow:hidden}
+.intro:before{content:"";position:absolute;width:720px;height:720px;border-radius:50%;background:radial-gradient(circle,rgba(47,125,105,.12),transparent 65%);right:-240px;top:-270px;filter:blur(4px)}
+.intro:after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(72,90,108,.10),transparent 66%);left:-120px;bottom:-160px}
+.intro-grid{width:min(1180px,100%);display:grid;grid-template-columns:1.03fr .97fr;gap:56px;align-items:center;position:relative;z-index:2}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid #d9dfdd;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);border-radius:999px;padding:7px 11px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#466057}
+.eyebrow i{width:7px;height:7px;background:var(--accent);border-radius:50%;box-shadow:0 0 0 5px rgba(47,125,105,.10)}
+.intro h1{font-size:clamp(42px,5.2vw,74px);line-height:.98;letter-spacing:-.055em;margin:19px 0 18px;max-width:760px}.intro h1 em{font-style:normal;color:var(--accent)}
+.intro-copy{font-size:17px;line-height:1.62;color:#5f666b;max-width:630px;margin:0 0 26px}
+.intro-actions{display:flex;gap:10px;flex-wrap:wrap}.cta{border:0;border-radius:10px;padding:13px 17px;font-weight:800;font-size:13px}.cta.dark{background:var(--dark);color:#fff;box-shadow:0 10px 22px rgba(23,26,29,.18)}.cta.light{background:#fff;color:var(--ink);border:1px solid #dfe3e5}.cta:hover{transform:translateY(-1px)}
+.trust-row{display:flex;flex-wrap:wrap;gap:18px;margin-top:28px;color:#737b80;font-size:11px}.trust-row span{display:flex;align-items:center;gap:7px}.trust-row b{color:#2c3732}
+
+.scene-wrap{perspective:1300px;min-height:520px;display:grid;place-items:center;position:relative}
+.scene{width:520px;height:410px;position:relative;transform-style:preserve-3d;transform:rotateX(7deg) rotateY(-10deg);transition:transform .15s ease-out}
+.glow{position:absolute;inset:80px 35px 30px 45px;background:radial-gradient(circle,rgba(47,125,105,.20),rgba(47,125,105,0) 64%);filter:blur(14px);transform:translateZ(-80px)}
+.float-card{position:absolute;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border:1px solid rgba(211,217,219,.92);box-shadow:0 26px 58px rgba(26,35,39,.15);border-radius:18px;transform-style:preserve-3d}
+.fc-main{width:400px;left:55px;top:65px;padding:18px;transform:translateZ(15px)}
+.mini-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.mini-brand{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:850}.brand-dot{width:23px;height:23px;border-radius:8px;background:var(--dark);position:relative}.brand-dot:after{content:"";position:absolute;width:7px;height:7px;border:2px solid #fff;border-radius:50%;left:6px;top:6px}
+.live{font-size:9px;color:var(--green);font-weight:850;background:#e9f5ef;border-radius:999px;padding:5px 8px}.mini-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mini-metric{border:1px solid #e6e9eb;background:#fbfcfc;border-radius:10px;padding:10px}.mini-metric small{font-size:8px;color:#7a8288}.mini-metric b{display:block;font-size:18px;margin-top:4px}.mini-table{margin-top:10px;border:1px solid #e5e8ea;border-radius:10px;overflow:hidden}.mini-row{display:grid;grid-template-columns:1.3fr .8fr .8fr;gap:8px;padding:9px 10px;border-top:1px solid #eef0f1;font-size:8.8px;align-items:center}.mini-row:first-child{border-top:0}.mini-row b{font-size:9px}.tag{display:inline-flex;border-radius:999px;padding:4px 6px;font-size:7.5px;font-weight:800;width:max-content}.tag.new{background:#edf4ff;color:#315f9b}.tag.follow{background:#fff3dd;color:#956314}.tag.won{background:#e9f6ef;color:#24734f}
+.fc-left{width:180px;left:-5px;top:245px;padding:14px;transform:translateZ(85px) rotateY(6deg);animation:floatA 5.5s ease-in-out infinite}.fc-right{width:190px;right:-7px;top:18px;padding:14px;transform:translateZ(95px) rotateY(-8deg);animation:floatB 6s ease-in-out infinite}.fc-bottom{width:200px;right:45px;bottom:-6px;padding:14px;transform:translateZ(62px) rotateX(-4deg);animation:floatC 6.8s ease-in-out infinite}
+.fc-label{font-size:8.5px;color:#7a8288;text-transform:uppercase;letter-spacing:.08em}.fc-num{font-size:26px;font-weight:900;letter-spacing:-.04em;margin:5px 0}.fc-sub{font-size:9px;color:#65706d}.spark{height:38px;display:flex;gap:5px;align-items:end;margin-top:8px}.spark span{flex:1;background:linear-gradient(180deg,#76b7a1,#2f7d69);border-radius:4px 4px 2px 2px;opacity:.9}
+@keyframes floatA{0%,100%{transform:translateZ(85px) rotateY(6deg) translateY(0)}50%{transform:translateZ(85px) rotateY(6deg) translateY(-10px)}}
+@keyframes floatB{0%,100%{transform:translateZ(95px) rotateY(-8deg) translateY(0)}50%{transform:translateZ(95px) rotateY(-8deg) translateY(9px)}}
+@keyframes floatC{0%,100%{transform:translateZ(62px) rotateX(-4deg) translateY(0)}50%{transform:translateZ(62px) rotateX(-4deg) translateY(-7px)}}
+
+/* APP */
+.app{display:grid;grid-template-columns:238px 1fr;min-height:100vh;background:#f6f7f8}.sidebar{background:#171a1d;color:#fff;padding:18px 13px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}.appbrand{display:flex;gap:10px;align-items:center;padding:3px 8px 19px;border-bottom:1px solid rgba(255,255,255,.08)}.appmark{width:34px;height:34px;border-radius:9px;background:#fff;color:#171a1d;display:grid;place-items:center;font-weight:950}.appbrand strong{display:block;font-size:14px}.appbrand small{display:block;color:#8c969e;font-size:9.5px;margin-top:2px}.nav{padding-top:15px;display:grid;gap:3px}.nav button{border:0;background:transparent;color:#9da7ad;text-align:left;padding:10px 11px;border-radius:8px;font-size:11px;font-weight:760;display:flex;align-items:center;gap:9px}.nav button:hover,.nav button.active{background:#23272b;color:#fff}.nav i{width:16px;height:16px;border:1px solid #4c555b;border-radius:5px;display:inline-grid;place-items:center;font-style:normal;font-size:8px}.nav button.active i{border-color:#83bfae;color:#83bfae}.sidebottom{margin-top:auto;padding:11px;border:1px solid rgba(255,255,255,.09);border-radius:10px;background:rgba(255,255,255,.03)}.sidebottom b{font-size:10px;color:#dfe4e2}.sidebottom p{font-size:9px;color:#89949b;line-height:1.45;margin:5px 0 0}
+.main{padding:23px 27px 50px;min-width:0}.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px}.crumb{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#7a8288;font-weight:800}.topbar h2{font-size:24px;letter-spacing:-.035em;margin:4px 0 2px}.subtitle{font-size:11px;color:#70787e}.top-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.control,.btn{border:1px solid #dfe3e5;background:#fff;color:#202428;border-radius:8px;padding:9px 11px;font-size:10.5px;font-weight:780}.control:hover,.btn:hover{border-color:#cbd1d5}.btn.primary{background:#171a1d;color:#fff;border-color:#171a1d}.btn.accent{background:#2f7d69;color:#fff;border-color:#2f7d69}.btn.danger{color:var(--red)}
+.hero-strip{background:linear-gradient(135deg,#18201e,#202a27);color:#fff;border-radius:15px;padding:17px 18px;display:grid;grid-template-columns:1.3fr .7fr;gap:18px;align-items:center;box-shadow:var(--shadow2);position:relative;overflow:hidden}.hero-strip:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-45px;top:-125px;background:radial-gradient(circle,rgba(113,182,159,.34),transparent 68%)}.hero-strip h3{font-size:16px;margin:0 0 5px;position:relative;z-index:1}.hero-strip p{font-size:10.5px;color:#bec8c5;line-height:1.5;margin:0;position:relative;z-index:1}.journey{display:flex;justify-content:flex-end;gap:5px;align-items:center;position:relative;z-index:1}.journey span{font-size:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);padding:6px 7px;border-radius:999px;color:#d9dfdd}.journey b{font-size:9px;color:#78b7a5}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-top:12px}.card{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 4px 16px rgba(18,24,28,.04)}.metric{padding:14px}.metric-top{display:flex;justify-content:space-between;align-items:center;color:#777f85;font-size:9px;text-transform:uppercase;letter-spacing:.06em}.metric-num{font-size:25px;font-weight:900;letter-spacing:-.045em;margin:7px 0 3px}.metric small{font-size:9px;color:#7d858a}.pulse{width:8px;height:8px;border-radius:50%;background:#4f9e82;box-shadow:0 0 0 5px rgba(79,158,130,.10)}
+.grid2{display:grid;grid-template-columns:1.4fr .8fr;gap:11px;margin-top:11px}.section{padding:14px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:11px}.section-head h3{font-size:13px;margin:0}.section-head span{font-size:9px;color:#7a8389}.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.quick{border:1px solid #e1e5e7;background:#fafbfb;border-radius:9px;padding:10px;text-align:left;transition:.18s}.quick:hover{background:#fff;border-color:#cfd6d8;transform:translateY(-1px);box-shadow:0 5px 15px rgba(18,24,28,.05)}.quick b{font-size:10.5px;display:block}.quick span{font-size:8.8px;color:#737c81;line-height:1.4;display:block;margin-top:3px}.quick .qicon{width:27px;height:27px;border-radius:8px;background:#edf3f1;color:#2f7d69;display:grid;place-items:center;margin-bottom:8px;font-size:11px;font-weight:900}
+.follow-list{display:grid;gap:6px}.follow{border:1px solid #e4e7e9;border-radius:9px;padding:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}.person{display:flex;gap:8px;align-items:center;min-width:0}.avatar{width:29px;height:29px;border-radius:8px;background:#edf1f1;display:grid;place-items:center;font-size:9px;font-weight:900;color:#39443f;flex:none}.person b{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.person small{font-size:8.5px;color:#7a8389}.status{display:inline-flex;border-radius:999px;padding:4px 7px;font-size:8px;font-weight:850}.s-new{background:#edf4ff;color:#315f9b}.s-contacted{background:#f1effb;color:#6652ad}.s-followup{background:#fff3dc;color:#9b6514}.s-won{background:#e9f6ef;color:#24734f}.s-lost{background:#fff0f1;color:#ac3d48}
+.table-card{margin-top:11px;overflow:hidden}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:860px}th,td{padding:10px 11px;border-bottom:1px solid #edf0f1;text-align:left;font-size:10px}th{font-size:8.5px;color:#747d82;text-transform:uppercase;letter-spacing:.07em;background:#fafbfb}tbody tr:hover{background:#fbfcfc}.leadname{font-weight:850}.company{font-size:8.5px;color:#7a8288;margin-top:2px}.money{font-weight:850}.mini{border:1px solid #dde2e4;background:#fff;border-radius:6px;padding:5px 7px;font-size:8.5px;font-weight:800}.overdue{color:var(--red);font-weight:850}.today{color:var(--amber);font-weight:850}.muted{color:#7a8288}.toolbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}.field{border:1px solid #dfe3e5;background:#fff;border-radius:8px;padding:9px 10px;font-size:10px;outline:none}.field:focus{border-color:#9dafaa}.search{min-width:250px;flex:1}.kanban{display:grid;grid-template-columns:repeat(5,minmax(205px,1fr));gap:9px;overflow:auto}.column{background:#eef1f1;border:1px solid #e0e4e5;border-radius:11px;padding:8px;min-height:380px}.column-head{display:flex;justify-content:space-between;padding:3px 2px 9px;font-size:10px;font-weight:850}.deal{background:#fff;border:1px solid #e1e5e6;border-radius:9px;padding:9px;margin-bottom:7px;box-shadow:0 2px 6px rgba(18,24,28,.03)}.deal:hover{border-color:#cfd6d8}.deal b{font-size:10px}.deal p{font-size:8.5px;color:#778086;margin:5px 0 7px}.deal .bottom{display:flex;justify-content:space-between;font-size:8.5px}.view{display:none}.view.active{display:block}
+.drawer-bg,.modal-bg{position:fixed;inset:0;background:rgba(8,12,14,.42);z-index:60;display:none}.drawer-bg.open,.modal-bg.open{display:block}.drawer{position:absolute;right:0;top:0;height:100%;width:min(470px,93vw);background:#fff;box-shadow:-20px 0 70px rgba(15,20,23,.18);display:flex;flex-direction:column}.drawer-head{padding:17px 19px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:start}.drawer-head h3{font-size:16px;margin:0}.drawer-head p{font-size:9px;color:#7a8389;margin:4px 0 0}.close{border:0;background:transparent;font-size:22px;color:#6f777d}.drawer-body{padding:16px 19px;overflow:auto}.drawer-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:13px}.action-btn{border:1px solid #dfe3e5;background:#fff;border-radius:8px;padding:9px;font-size:9px;font-weight:850}.action-btn:hover{background:#f8faf9}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.detail-box{border:1px solid #e3e6e8;background:#fafbfb;border-radius:8px;padding:9px}.detail-box span{font-size:8px;color:#7c858a;text-transform:uppercase;letter-spacing:.06em}.detail-box b{display:block;font-size:10px;margin-top:3px}.notes,.timeline{margin-top:12px}.notes h4,.timeline h4{font-size:10px;margin:0 0 7px}.note-box{background:#fafbfb;border:1px solid #e3e6e8;border-radius:8px;padding:10px;font-size:10px;line-height:1.5;color:#41484c}.event{display:grid;grid-template-columns:7px 1fr;gap:8px;padding:6px 0}.event-dot{width:6px;height:6px;border-radius:50%;background:#81a79b;margin-top:4px}.event b{font-size:9.5px}.event small{display:block;font-size:8px;color:#7a8389}.drawer-foot{margin-top:auto;border-top:1px solid var(--line);padding:11px 19px;display:flex;justify-content:space-between;gap:7px}.modal-bg{align-items:center;justify-content:center;padding:18px}.modal-bg.open{display:flex}.modal{width:min(670px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:13px;box-shadow:0 30px 90px rgba(14,18,21,.22)}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:15px 17px;border-bottom:1px solid var(--line)}.modal-head h3{font-size:14px;margin:0}.modal-body{padding:15px 17px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.form-grid label{display:grid;gap:5px;font-size:9px;font-weight:750;color:#697278}.form-grid .full{grid-column:1/-1}textarea.field{min-height:80px;resize:vertical}.modal-foot{padding:11px 17px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:7px}.toast{position:fixed;right:20px;bottom:20px;background:#171a1d;color:#fff;border-radius:8px;padding:10px 12px;font-size:10px;box-shadow:0 12px 30px rgba(0,0,0,.18);opacity:0;transform:translateY(8px);pointer-events:none;transition:.18s;z-index:100}.toast.show{opacity:1;transform:none}
+
+/* TOUR */
+.tour{position:fixed;left:50%;top:15px;transform:translateX(-50%);width:min(700px,calc(100vw - 26px));background:#171a1d;color:#fff;border:1px solid #2b3135;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.22);z-index:110;padding:12px 13px;display:none}.tour.open{display:flex;justify-content:space-between;gap:12px;align-items:center}.tour strong{font-size:10px;display:block;color:#9ed0bf}.tour p{font-size:10px;color:#c4ccca;margin:3px 0 0}.tour-actions{display:flex;gap:6px;flex:none}.tour button{border:1px solid #3b4348;background:#24292d;color:#fff;border-radius:7px;padding:7px 9px;font-size:9px;font-weight:800}.tour button.next{background:#fff;color:#171a1d;border-color:#fff}
+
+@media(max-width:1000px){.intro-grid{grid-template-columns:1fr}.scene-wrap{min-height:430px}.scene{transform:scale(.88) rotateX(6deg) rotateY(-7deg)}.app{grid-template-columns:76px 1fr}.appbrand div:last-child,.nav span,.sidebottom{display:none}.appbrand{justify-content:center}.nav button{justify-content:center}.hero-strip,.grid2{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.intro{padding:36px 18px}.scene-wrap{min-height:330px}.scene{transform:scale(.62)}.intro h1{font-size:46px}.main{padding:17px 12px 40px}.topbar{display:block}.top-actions{margin-top:10px}.metrics{grid-template-columns:1fr 1fr}.quick-grid{grid-template-columns:1fr}.journey{justify-content:flex-start;flex-wrap:wrap}.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.drawer-actions{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr}.tour.open{align-items:flex-start}.tour p{display:none}}
+</style>
+</head>
+<body>
+
+<section class="intro" id="intro">
+  <div class="intro-grid">
+    <div>
+      <div class="eyebrow"><i></i> Interactive client demo</div>
+      <h1>Every enquiry.<br>Every follow-up.<br><em>Nothing missed.</em></h1>
+      <p class="intro-copy">A lightweight sales workspace for small teams that are tired of losing leads across spreadsheets, DMs, inboxes and notes. See exactly who needs attention today — and how much revenue is still in the pipeline.</p>
+      <div class="intro-actions">
+        <button class="cta dark" id="enterDemo">Explore interactive demo</button>
+        <button class="cta light" id="startTourIntro">Start guided tour</button>
+      </div>
+      <div class="trust-row"><span>✓ <b>No setup required</b></span><span>✓ Fictional demo data</span><span>✓ Customizable for any workflow</span></div>
+    </div>
+    <div class="scene-wrap" id="sceneWrap">
+      <div class="scene" id="scene">
+        <div class="glow"></div>
+        <div class="float-card fc-main">
+          <div class="mini-top"><div class="mini-brand"><span class="brand-dot"></span> ClientFlow</div><span class="live">LIVE PIPELINE</span></div>
+          <div class="mini-metrics"><div class="mini-metric"><small>OPEN LEADS</small><b>18</b></div><div class="mini-metric"><small>DUE TODAY</small><b>5</b></div><div class="mini-metric"><small>PIPELINE</small><b>$42k</b></div></div>
+          <div class="mini-table"><div class="mini-row"><b>Olivia Carter</b><span class="tag follow">Follow-up</span><b>$3,200</b></div><div class="mini-row"><b>Marcus Reed</b><span class="tag new">New</span><b>$4,500</b></div><div class="mini-row"><b>Ethan Brooks</b><span class="tag won">Won</span><b>$2,900</b></div></div>
+        </div>
+        <div class="float-card fc-left"><div class="fc-label">Potential revenue</div><div class="fc-num">$42,700</div><div class="fc-sub">Across 18 open opportunities</div><div class="spark"><span style="height:28%"></span><span style="height:52%"></span><span style="height:44%"></span><span style="height:79%"></span><span style="height:64%"></span><span style="height:100%"></span></div></div>
+        <div class="float-card fc-right"><div class="fc-label">Needs attention</div><div class="fc-num">5</div><div class="fc-sub">Follow-ups due today</div></div>
+        <div class="float-card fc-bottom"><div class="fc-label">Latest activity</div><div class="fc-sub" style="margin-top:6px"><b style="color:#20272a">New lead captured</b><br>Website • 2 min ago</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="app hidden" id="app">
+  <aside class="sidebar">
+    <div class="appbrand"><div class="appmark">C</div><div><strong>ClientFlow</strong><small>Sales workspace demo</small></div></div>
+    <nav class="nav">
+      <button class="active" data-view="overview"><i>01</i><span>Overview</span></button>
+      <button data-view="leads"><i>02</i><span>All Leads</span></button>
+      <button data-view="followups"><i>03</i><span>Follow-ups</span></button>
+      <button data-view="pipeline"><i>04</i><span>Pipeline</span></button>
+    </nav>
+    <div class="sidebottom"><b>DEMO MODE</b><p>All names and data are fictional. A live client version can connect to forms, email, booking tools and team accounts.</p></div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div><div class="crumb" id="workspaceLabel">HOME SERVICES WORKSPACE</div><h2 id="pageTitle">Sales Overview</h2><div class="subtitle" id="pageSub">See every enquiry, next follow-up and deal from one screen.</div></div>
+      <div class="top-actions">
+        <select class="control" id="industrySelect"><option value="home">Home Services</option><option value="agency">Marketing Agency</option><option value="realestate">Real Estate Team</option><option value="recruitment">Recruitment Agency</option></select>
+        <button class="btn" id="tourBtn">Guided tour</button><button class="btn" id="resetBtn">Reset</button><button class="btn primary" id="addBtn">+ Add lead</button>
+      </div>
+    </div>
+
+    <section class="hero-strip">
+      <div><h3 id="heroTitle">One place for every enquiry and next action.</h3><p id="heroText">Instead of checking calls, forms, DMs and spreadsheets separately, the team opens this workspace and instantly sees what needs attention.</p></div>
+      <div class="journey"><span>Capture</span><b>→</b><span>Contact</span><b>→</b><span>Follow up</span><b>→</b><span>Close</span></div>
+    </section>
+
+    <section class="view active" id="overview">
+      <div class="metrics">
+        <div class="card metric" id="metricOpenCard"><div class="metric-top"><span>Open Leads</span><i class="pulse"></i></div><div class="metric-num" id="metricOpen">0</div><small>Active opportunities being worked</small></div>
+        <div class="card metric" id="metricDueCard"><div class="metric-top"><span>Need Follow-up</span><span>Today</span></div><div class="metric-num" id="metricDue">0</div><small>People the team should contact now</small></div>
+        <div class="card metric"><div class="metric-top"><span>Pipeline Value</span><span>Potential</span></div><div class="metric-num" id="metricPipeline">$0</div><small>Value of open opportunities</small></div>
+        <div class="card metric"><div class="metric-top"><span>Won Revenue</span><span>Demo</span></div><div class="metric-num" id="metricWon">$0</div><small>Closed deals in this workspace</small></div>
+      </div>
+      <div class="grid2">
+        <div class="card section" id="tryDemoCard"><div class="section-head"><h3>Try the workflow</h3><span>Everything below is interactive</span></div>
+          <div class="quick-grid">
+            <button class="quick" id="simulateBtn"><span class="qicon">+</span><b>Simulate a new enquiry</b><span>Add an incoming lead and watch the dashboard update instantly.</span></button>
+            <button class="quick" id="todayBtn"><span class="qicon">↗</span><b>Open today’s follow-ups</b><span>See who is due or overdue so nobody gets forgotten.</span></button>
+            <button class="quick" id="pipeBtn"><span class="qicon">▥</span><b>View the sales pipeline</b><span>See every opportunity by stage and potential value.</span></button>
+          </div>
+        </div>
+        <div class="card section"><div class="section-head"><h3>Needs attention</h3><span id="attentionCount">0 items</span></div><div class="follow-list" id="attentionList"></div></div>
+      </div>
+      <div class="card table-card"><div class="section"><div class="section-head"><h3>Recent enquiries</h3><span>Open any lead to try real actions</span></div></div><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Source</th><th>Interested In</th><th>Status</th><th>Next Action</th><th>Potential Value</th><th></th></tr></thead><tbody id="recentBody"></tbody></table></div></div>
+    </section>
+
+    <section class="view" id="leads"><div class="toolbar"><input class="field search" id="searchInput" placeholder="Search name, company, service..."><select class="field" id="statusFilter"><option value="">All statuses</option><option>New</option><option>Contacted</option><option>Follow-up</option><option>Won</option><option>Lost</option></select><select class="field" id="sourceFilter"><option value="">All sources</option><option>Website</option><option>Instagram</option><option>Phone</option><option>Email</option><option>Referral</option></select></div><div class="card table-card"><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Contact</th><th>Source</th><th>Interested In</th><th>Status</th><th>Follow-up</th><th>Value</th><th></th></tr></thead><tbody id="allBody"></tbody></table></div></div></section>
+
+    <section class="view" id="followups"><div class="card table-card"><div class="section"><div class="section-head"><h3>Follow-up queue</h3><span>Overdue first, then upcoming</span></div></div><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Status</th><th>Follow-up Date</th><th>Reason / Service</th><th>Value</th><th></th></tr></thead><tbody id="followBody"></tbody></table></div></div></section>
+
+    <section class="view" id="pipeline"><div class="kanban" id="kanban"></div></section>
+  </main>
+</div>
+
+<div class="drawer-bg" id="drawerBg"><aside class="drawer"><div class="drawer-head"><div><h3 id="drawerName">Lead</h3><p id="drawerCompany">Company</p></div><button class="close" id="closeDrawer">×</button></div><div class="drawer-body"><div class="drawer-actions"><button class="action-btn" id="markContacted">Mark contacted</button><button class="action-btn" id="followTomorrow">Follow up tomorrow</button><button class="action-btn" id="markWon">Mark as won</button></div><div class="detail-grid" id="detailGrid"></div><div class="notes"><h4>Notes</h4><div class="note-box" id="noteBox"></div></div><div class="timeline"><h4>Activity</h4><div id="timeline"></div></div></div><div class="drawer-foot"><button class="btn danger" id="deleteBtn">Delete</button><div><button class="btn" id="editBtn">Edit lead</button><button class="btn primary" id="doneBtn">Done</button></div></div></aside></div>
+
+<div class="modal-bg" id="modalBg"><div class="modal"><div class="modal-head"><h3 id="modalTitle">Add lead</h3><button class="close" id="closeModal">×</button></div><div class="modal-body"><form class="form-grid" id="leadForm"><input type="hidden" id="leadId"><label>Name<input class="field" id="name" required></label><label>Company<input class="field" id="company"></label><label>Email<input class="field" id="email" type="email"></label><label>Phone<input class="field" id="phone"></label><label>Source<select class="field" id="source"><option>Website</option><option>Instagram</option><option>Phone</option><option>Email</option><option>Referral</option></select></label><label>Service / Need<input class="field" id="service"></label><label>Status<select class="field" id="status"><option>New</option><option>Contacted</option><option>Follow-up</option><option>Won</option><option>Lost</option></select></label><label>Deal Value ($)<input class="field" id="value" type="number" min="0"></label><label>Next Follow-up<input class="field" id="follow" type="date"></label><label>Assigned To<input class="field" id="assigned"></label><label class="full">Notes<textarea class="field" id="notes"></textarea></label></form></div><div class="modal-foot"><button class="btn" id="cancelModal">Cancel</button><button class="btn accent" id="saveBtn">Save lead</button></div></div></div>
+
+<div class="tour" id="tour"><div><strong id="tourTitle">Step 1 of 4</strong><p id="tourText">New enquiries arrive from your website, calls, Instagram or referrals and land in one place.</p></div><div class="tour-actions"><button id="tourExit">Exit</button><button class="next" id="tourNext">Next</button></div></div>
+<div class="toast" id="toast">Updated</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const now=new Date(); now.setHours(0,0,0,0);
+const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+const day=n=>{const d=new Date(now);d.setDate(d.getDate()+n);return iso(d)};
+const money=n=>"$"+Number(n||0).toLocaleString("en-US");
+const dateLabel=s=>s?new Date(s+"T00:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"}):"—";
+const diff=s=>s?Math.round((new Date(s+"T00:00:00")-now)/86400000):999;
+const initials=n=>(n||"?").split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase();
+const stClass=s=>({New:"s-new",Contacted:"s-contacted","Follow-up":"s-followup",Won:"s-won",Lost:"s-lost"}[s]||"s-new");
+const statusPill=s=>`<span class="status ${stClass(s)}">${s}</span>`;
+const industryData={
+ home:{label:"HOME SERVICES WORKSPACE",hero:"One place for every enquiry and next action.",text:"Instead of checking calls, forms, DMs and spreadsheets separately, the team opens this workspace and instantly sees what needs attention.",services:["HVAC Replacement","Roof Inspection","Kitchen Remodel","Emergency Plumbing","Window Installation"],companies:["Carter Home","Northline HVAC","Brooks Roofing","Maple Renovations"]},
+ agency:{label:"MARKETING AGENCY WORKSPACE",hero:"Know exactly which prospect needs attention next.",text:"Track inbound leads, proposals, follow-ups and deal value without managing separate spreadsheets, inboxes and notes.",services:["Paid Ads Retainer","Brand Strategy","Website Redesign","SEO Retainer","Content Package"],companies:["Nova Brands","Atlas Commerce","Bloom Studio","Cedar Health"]},
+ realestate:{label:"REAL ESTATE TEAM WORKSPACE",hero:"Turn more enquiries into booked conversations.",text:"Keep buyers, sellers, property interests and next follow-ups organized so opportunities do not disappear inside DMs and phone notes.",services:["Buyer Consultation","Listing Appointment","Investment Property","New Construction","Relocation"],companies:["Carter Family","Reed Holdings","Northstar Investor","Martinez Realty"]},
+ recruitment:{label:"RECRUITMENT AGENCY WORKSPACE",hero:"Keep every employer opportunity moving.",text:"Track employer enquiries, hiring requirements, proposal stages and follow-ups in one shared workspace.",services:["Tech Recruitment","Executive Search","Volume Hiring","Healthcare Staffing","Contract Staffing"],companies:["Carter Tech","Northline Logistics","Bloom Health","Atlas Finance"]}
+};
+const seed=[
+{id:1,name:"Olivia Carter",company:"Carter Home",email:"olivia@example.com",phone:"+1 512 555 0182",source:"Website",service:"Kitchen Remodel",status:"Follow-up",value:7200,follow:day(0),assigned:"Mia",notes:"Requested a revised estimate. Follow up after spouse reviews the scope.",created:Date.now()-800000,events:["Proposal sent","Website enquiry captured"]},
+{id:2,name:"Marcus Reed",company:"Reed Holdings",email:"marcus@example.com",phone:"+1 214 555 0124",source:"Instagram",service:"Roof Inspection",status:"Contacted",value:4600,follow:day(1),assigned:"Mia",notes:"Interested. Asked for availability next week.",created:Date.now()-700000,events:["Initial call completed","Instagram enquiry captured"]},
+{id:3,name:"Sophia Nguyen",company:"NOVA Wellness",email:"sophia@example.com",phone:"+1 305 555 0199",source:"Referral",service:"HVAC Replacement",status:"New",value:8600,follow:day(0),assigned:"Alex",notes:"Warm referral. Call before 4pm.",created:Date.now()-600000,events:["Referral lead added"]},
+{id:4,name:"Ethan Brooks",company:"Brooks Roofing",email:"ethan@example.com",phone:"+1 602 555 0158",source:"Phone",service:"Window Installation",status:"Won",value:3900,follow:day(5),assigned:"Alex",notes:"Deposit paid. Job scheduled.",created:Date.now()-500000,events:["Deal marked won","Deposit confirmed","Phone enquiry captured"]},
+{id:5,name:"Ava Martinez",company:"Maple Renovations",email:"ava@example.com",phone:"+1 713 555 0172",source:"Email",service:"Emergency Plumbing",status:"Follow-up",value:2800,follow:day(-1),assigned:"Mia",notes:"Estimate sent yesterday. No reply yet.",created:Date.now()-400000,events:["Estimate emailed","Email enquiry captured"]},
+{id:6,name:"Noah Williams",company:"Northline HVAC",email:"noah@example.com",phone:"+1 469 555 0112",source:"Website",service:"HVAC Replacement",status:"Contacted",value:11200,follow:day(2),assigned:"Alex",notes:"Large job. Site visit requested.",created:Date.now()-300000,events:["Site visit requested","Website enquiry captured"]},
+{id:7,name:"Emma Johnson",company:"Bloom Interiors",email:"emma@example.com",phone:"+1 404 555 0188",source:"Instagram",service:"Kitchen Remodel",status:"Lost",value:3200,follow:day(9),assigned:"Mia",notes:"Budget not approved this month.",created:Date.now()-200000,events:["Marked lost","Instagram enquiry captured"]},
+{id:8,name:"Liam Foster",company:"Foster Fitness",email:"liam@example.com",phone:"+1 917 555 0137",source:"Website",service:"Window Installation",status:"New",value:5100,follow:day(3),assigned:"Alex",notes:"Requested a call after viewing the quote page.",created:Date.now()-100000,events:["Website enquiry captured"]}
+];
+let leads=JSON.parse(localStorage.getItem("clientflow_v3")||"null")||JSON.parse(JSON.stringify(seed));
+let current=null, currentIndustry=localStorage.getItem("clientflow_industry")||"home", tourStep=0;
+function persist(){localStorage.setItem("clientflow_v3",JSON.stringify(leads))}
+function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1800)}
+function applyIndustry(){const d=industryData[currentIndustry];$("workspaceLabel").textContent=d.label;$("heroTitle").textContent=d.hero;$("heroText").textContent=d.text;$("industrySelect").value=currentIndustry;localStorage.setItem("clientflow_industry",currentIndustry)}
+function render(){applyIndustry();const open=leads.filter(x=>!["Won","Lost"].includes(x.status));const due=open.filter(x=>diff(x.follow)<=0);const won=leads.filter(x=>x.status==="Won");$("metricOpen").textContent=open.length;$("metricDue").textContent=due.length;$("metricPipeline").textContent=money(open.reduce((a,x)=>a+Number(x.value||0),0));$("metricWon").textContent=money(won.reduce((a,x)=>a+Number(x.value||0),0));renderAttention();renderRecent();renderAll();renderFollow();renderKanban()}
+function renderAttention(){const arr=leads.filter(x=>!["Won","Lost"].includes(x.status)&&diff(x.follow)<=0).sort((a,b)=>a.follow.localeCompare(b.follow));$("attentionCount").textContent=arr.length+" item"+(arr.length===1?"":"s");$("attentionList").innerHTML=arr.length?arr.slice(0,5).map(x=>`<button class="follow" onclick="openLead(${x.id})" style="width:100%;background:#fff;text-align:left"><div class="person"><div class="avatar">${initials(x.name)}</div><div><b>${x.name}</b><small>${x.company} • ${x.service}</small></div></div><span class="status ${diff(x.follow)<0?'s-lost':'s-followup'}">${diff(x.follow)<0?'Overdue':'Today'}</span></button>`).join(""):`<div class="muted" style="font-size:10px;padding:12px">Nothing due right now.</div>`}
+function row(x,full=false){const d=diff(x.follow),cl=d<0?"overdue":d===0?"today":"";return `<tr><td><div class="leadname">${x.name}</div><div class="company">${x.company}</div></td>${full?`<td><span class="muted">${x.email}</span><br>${x.phone}</td>`:""}<td>${x.source}</td><td>${x.service}</td><td>${statusPill(x.status)}</td><td class="${cl}">${dateLabel(x.follow)}${d<0?' • overdue':d===0?' • today':''}</td><td class="money">${money(x.value)}</td><td><button class="mini" onclick="openLead(${x.id})">Open</button></td></tr>`}
+function renderRecent(){$("recentBody").innerHTML=[...leads].sort((a,b)=>b.created-a.created).slice(0,6).map(x=>row(x,false)).join("")}
+function renderAll(){const q=$("searchInput").value.toLowerCase(),s=$("statusFilter").value,src=$("sourceFilter").value;const arr=leads.filter(x=>(!q||[x.name,x.company,x.email,x.service].join(" ").toLowerCase().includes(q))&&(!s||x.status===s)&&(!src||x.source===src));$("allBody").innerHTML=arr.length?arr.map(x=>row(x,true)).join(""):`<tr><td colspan="8" class="muted" style="text-align:center;padding:28px">No matching leads.</td></tr>`}
+function renderFollow(){const arr=leads.filter(x=>x.follow&&!["Won","Lost"].includes(x.status)).sort((a,b)=>a.follow.localeCompare(b.follow));$("followBody").innerHTML=arr.map(x=>`<tr><td><div class="leadname">${x.name}</div><div class="company">${x.company}</div></td><td>${statusPill(x.status)}</td><td class="${diff(x.follow)<0?'overdue':diff(x.follow)===0?'today':''}">${dateLabel(x.follow)}</td><td>${x.service}</td><td class="money">${money(x.value)}</td><td><button class="mini" onclick="openLead(${x.id})">Open</button></td></tr>`).join("")}
+function renderKanban(){const stages=["New","Contacted","Follow-up","Won","Lost"];$("kanban").innerHTML=stages.map(s=>{const arr=leads.filter(x=>x.status===s);return `<div class="column"><div class="column-head"><span>${s}</span><span class="muted">${arr.length}</span></div>${arr.map(x=>`<div class="deal" onclick="openLead(${x.id})"><b>${x.name}</b><p>${x.company} • ${x.service}</p><div class="bottom"><span>${statusPill(x.status)}</span><b>${money(x.value)}</b></div></div>`).join("")||`<div class="muted" style="font-size:9px;padding:10px">No leads</div>`}</div>`}).join("")}
+function switchView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));const map={overview:["Sales Overview","See every enquiry, next follow-up and deal from one screen."],leads:["All Leads","Search, filter and update every opportunity."],followups:["Follow-up Queue","Know exactly who needs a call, email or message next."],pipeline:["Sales Pipeline","See where every opportunity stands."]};$("pageTitle").textContent=map[id][0];$("pageSub").textContent=map[id][1]}
+function openLead(id){current=id;const x=leads.find(a=>a.id===id);if(!x)return;$("drawerName").textContent=x.name;$("drawerCompany").textContent=x.company+" • "+x.service;$("detailGrid").innerHTML=`<div class="detail-box"><span>Status</span><b>${statusPill(x.status)}</b></div><div class="detail-box"><span>Potential value</span><b>${money(x.value)}</b></div><div class="detail-box"><span>Next follow-up</span><b>${dateLabel(x.follow)}</b></div><div class="detail-box"><span>Source</span><b>${x.source}</b></div><div class="detail-box"><span>Assigned to</span><b>${x.assigned||'Unassigned'}</b></div><div class="detail-box"><span>Contact</span><b>${x.email}</b></div>`;$("noteBox").textContent=x.notes||"No notes yet.";$("timeline").innerHTML=(x.events||["Lead created"]).map(e=>`<div class="event"><span class="event-dot"></span><div><b>${e}</b><small>Demo activity</small></div></div>`).join("");$("drawerBg").classList.add("open")}
+window.openLead=openLead;
+function updateCurrent(mut,msg){const i=leads.findIndex(x=>x.id===current);if(i<0)return;mut(leads[i]);leads[i].events=leads[i].events||[];leads[i].events.unshift(msg);persist();render();openLead(current);toast(msg)}
+function openAdd(edit=false){const x=edit?leads.find(a=>a.id===current):null;$("modalTitle").textContent=edit?"Edit lead":"Add lead";$("leadForm").reset();const keys=["name","company","email","phone","source","service","status","value","follow","assigned","notes"];keys.forEach(k=>$(k).value=x?.[k]??"");$("leadId").value=x?.id||"";if(!edit){$("follow").value=day(2);$("status").value="New"}$("modalBg").classList.add("open")}
+function simulate(){const d=industryData[currentIndustry],names=["Daniel Harper","Maya Collins","Jordan Lee","Amelia Grant","Chris Walker"];const name=names[Math.floor(Math.random()*names.length)],svc=d.services[Math.floor(Math.random()*d.services.length)],company=d.companies[Math.floor(Math.random()*d.companies.length)];const x={id:Date.now(),name,company,email:name.toLowerCase().replace(' ','.')+'@example.com',phone:'+1 555 010 '+String(Math.floor(Math.random()*90)+10),source:["Website","Instagram","Referral"][Math.floor(Math.random()*3)],service:svc,status:"New",value:[2400,3800,5200,7600,9800][Math.floor(Math.random()*5)],follow:day(0),assigned:"Mia",notes:"New enquiry. Contact requested today.",created:Date.now(),events:["New enquiry captured automatically"]};leads.unshift(x);persist();render();toast("New enquiry captured");setTimeout(()=>openLead(x.id),450)}
+function saveLead(){const keys=["name","company","email","phone","source","service","status","value","follow","assigned","notes"],x={};keys.forEach(k=>x[k]=$(k).value);if(!x.name.trim()){toast("Please enter a name");return}x.value=Number(x.value||0);const id=Number($("leadId").value||0);if(id){const i=leads.findIndex(a=>a.id===id);x.id=id;x.created=leads[i].created;x.events=leads[i].events||[];x.events.unshift("Lead record updated");leads[i]=x}else{x.id=Date.now();x.created=Date.now();x.events=["Lead added manually"];leads.unshift(x)}persist();$("modalBg").classList.remove("open");render();toast(id?"Lead updated":"Lead added")}
+
+// nav + buttons
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
+$("enterDemo").onclick=()=>{$("intro").classList.add("hidden");$("app").classList.remove("hidden");window.scrollTo(0,0);render()};
+$("startTourIntro").onclick=()=>{$("enterDemo").click();startTour()};$("tourBtn").onclick=startTour;
+$("simulateBtn").onclick=simulate;$("todayBtn").onclick=()=>switchView("followups");$("pipeBtn").onclick=()=>switchView("pipeline");$("addBtn").onclick=()=>openAdd(false);
+$("resetBtn").onclick=()=>{if(confirm("Reset the demo back to the original fictional data?")){leads=JSON.parse(JSON.stringify(seed));persist();render();toast("Demo reset")}};
+$("industrySelect").onchange=e=>{currentIndustry=e.target.value;applyIndustry();toast("Demo adapted for "+e.target.options[e.target.selectedIndex].text)};
+$("searchInput").oninput=renderAll;$("statusFilter").onchange=renderAll;$("sourceFilter").onchange=renderAll;
+$("closeDrawer").onclick=$("doneBtn").onclick=()=>$("drawerBg").classList.remove("open");$("drawerBg").addEventListener('click',e=>{if(e.target===$("drawerBg"))$("drawerBg").classList.remove("open")});
+$("markContacted").onclick=()=>updateCurrent(x=>x.status="Contacted","Marked as contacted");$("followTomorrow").onclick=()=>updateCurrent(x=>{x.status="Follow-up";x.follow=day(1)},"Follow-up scheduled for tomorrow");$("markWon").onclick=()=>updateCurrent(x=>x.status="Won","Deal marked won");$("editBtn").onclick=()=>{ $("drawerBg").classList.remove("open");openAdd(true)};$("deleteBtn").onclick=()=>{if(confirm("Delete this demo lead?")){leads=leads.filter(x=>x.id!==current);persist();$("drawerBg").classList.remove("open");render();toast("Lead deleted")}};
+$("closeModal").onclick=$("cancelModal").onclick=()=>$("modalBg").classList.remove("open");$("modalBg").addEventListener('click',e=>{if(e.target===$("modalBg"))$("modalBg").classList.remove("open")});$("saveBtn").onclick=saveLead;
+
+// guided tour
+const tourSteps=[
+ {t:"Step 1 of 4 — Capture",p:"A new enquiry from the website, Instagram, phone or referral is saved as a lead instead of getting lost in messages.",act:()=>{switchView("overview");}},
+ {t:"Step 2 of 4 — Follow up",p:"The dashboard shows exactly who is due or overdue today, so the team knows who needs attention next.",act:()=>{switchView("followups");}},
+ {t:"Step 3 of 4 — Pipeline",p:"Every opportunity sits in a clear stage — New, Contacted, Follow-up, Won or Lost — with its potential value visible.",act:()=>{switchView("pipeline");}},
+ {t:"Step 4 of 4 — Close",p:"When a lead becomes a customer, mark it Won. The dashboard updates closed revenue and keeps the history on one record.",act:()=>{switchView("overview");const x=leads.find(l=>l.status!=="Won"&&l.status!=="Lost");if(x)setTimeout(()=>openLead(x.id),350);}}
+];
+function startTour(){tourStep=0;$("tour").classList.add("open");runTourStep()}
+function runTourStep(){const s=tourSteps[tourStep];$("tourTitle").textContent=s.t;$("tourText").textContent=s.p;$("tourNext").textContent=tourStep===tourSteps.length-1?"Finish":"Next";s.act()}
+$("tourNext").onclick=()=>{if(tourStep>=tourSteps.length-1){$("tour").classList.remove("open");toast("Tour complete");return}tourStep++;runTourStep()};$("tourExit").onclick=()=>$("tour").classList.remove("open");
+
+// subtle 3D parallax
+$("sceneWrap").addEventListener('mousemove',e=>{const r=$("sceneWrap").getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;$("scene").style.transform=`rotateX(${7-y*8}deg) rotateY(${-10+x*10}deg)`});$("sceneWrap").addEventListener('mouseleave',()=>$("scene").style.transform='rotateX(7deg) rotateY(-10deg)');
+
+render();
+</script>
+</body>
+</html>
